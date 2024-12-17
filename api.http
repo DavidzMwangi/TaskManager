@@ -4,9 +4,8 @@ Accept: application/json
 Content-Type: application/json
 
 {
-  "title": "Task 2",
-  "description": "Description 2",
-  "status": "pending"
+  "title": "Task 15",
+  "description": "Description 2"
 }
 
 ###

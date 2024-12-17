@@ -48,7 +48,8 @@ class TaskController extends Controller
         $task = Task::findOrFail($id);
         $request->validate([
             'title' => 'required|unique:tasks',
-            'description' => 'optional',
+            'description' => 'nullable',
+            'status' => 'nullable|boolean',
         ]);
 
         $task->update($request->all());

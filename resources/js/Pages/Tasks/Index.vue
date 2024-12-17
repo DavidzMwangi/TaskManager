@@ -4,8 +4,12 @@ import AppLayout from "@/Layouts/AppLayout.vue";
 import type {ListResponse, Task} from "@/Types/types";
 import Pagination from "@/Components/Pagination.vue";
 import Icon from "@/Components/Icon.vue";
-import { Head, Link } from '@inertiajs/vue3'
+import {Head, Link, useForm} from '@inertiajs/vue3'
 import SearchFilter from "@/Components/SearchFilter.vue";
+import {Switch} from '@headlessui/vue'
+import {ref} from 'vue'
+
+const enabled = ref(false)
 
 defineProps({
     tasks: {
@@ -13,64 +17,112 @@ defineProps({
         required: true
     }
 })
+const statusVariant = (status: boolean) => {
+    return status ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+}
+const form = useForm({
+    status: false,
+});
+const updateStatus = (task: Task) => {
+    console.log(task)
+    form.status = !task.status
+    form.put(route('tasks.update', task.id),{
+        preserveScroll: true,
+        onSuccess: () => {
+            console.log('Task updated')
+        },
+        onError: (err) => {
+            console.log(err)
+        }
+    })
+    // axios.put(`/tasks/${task.id}`, {status: task.status})
+}
 </script>
 
 <template>
-<AppLayout>
+    <AppLayout>
 
 
-  <div>
-    <Head title="Organizations" />
-    <h1 class="mb-8 text-3xl font-bold">Organizations</h1>
-    <div class="flex items-center justify-between mb-6">
-<!--      <SearchFilter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">-->
-<!--        <label class="block text-gray-700">Trashed:</label>-->
-<!--        <select v-model="form.trashed" class="form-select mt-1 w-full">-->
-<!--          <option :value="null" />-->
-<!--          <option value="with">With Trashed</option>-->
-<!--          <option value="only">Only Trashed</option>-->
-<!--        </select>-->
-<!--      </SearchFilter>-->
-      <Link class="btn-indigo" href="/organizations/create">
-        <span>Create</span>
-        <span class="hidden md:inline">&nbsp;Organization</span>
-      </Link>
-    </div>
-    <div class="bg-white rounded-md shadow overflow-x-auto">
-      <table class="w-full whitespace-nowrap">
-        <thead>
-          <tr class="text-left font-bold">
-            <th class="pb-4 pt-6 px-6">Title</th>
-            <th class="pb-4 pt-6 px-6">Description</th>
-            <th class="pb-4 pt-6 px-6" colspan="2">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="task in tasks.data" :key="task.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
-            <td class="border-t">
-              <Link class="flex items-center px-6 py-4 focus:text-indigo-500" href="">
-                {{ task.title }}
-              </Link>
-            </td>
-            <td class="border-t">
-              <Link class="flex items-center px-6 py-4" href="" tabindex="-1">
-                {{ task.description }}
-              </Link>
-            </td>
-            <td class="border-t">
-
-
-            </td>
-          </tr>
-          <tr v-if="tasks.data.length === 0">
-            <td class="px-6 py-4 border-t" colspan="4">No organizations found.</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <Pagination class="mt-6" :links="tasks.links" />
-  </div>
-</AppLayout>
+        <div>
+            <Head title="Organizations"/>
+            <h1 class="mb-8 text-3xl font-bold">Organizations</h1>
+            <div class="flex items-center justify-between mb-6">
+                <!--      <SearchFilter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">-->
+                <!--        <label class="block text-gray-700">Trashed:</label>-->
+                <!--        <select v-model="form.trashed" class="form-select mt-1 w-full">-->
+                <!--          <option :value="null" />-->
+                <!--          <option value="with">With Trashed</option>-->
+                <!--          <option value="only">Only Trashed</option>-->
+                <!--        </select>-->
+                <!--      </SearchFilter>-->
+                <Link class="btn-indigo" href="/organizations/create">
+                    <span>Create</span>
+                    <span class="hidden md:inline">&nbsp;Organization</span>
+                </Link>
+            </div>
+            <div class="bg-gray-300 dark:bg-gray-700  rounded-md shadow overflow-x-auto text-black dark:text-gray-300">
+                <table class="w-full whitespace-nowrap ">
+                    <thead>
+                    <tr class="text-left font-bold text-black dark:text-gray-100 ">
+                        <th class="pb-4 pt-6 px-6">Title</th>
+                        <th class="pb-4 pt-6 px-6">Description</th>
+                        <th class="pb-4 pt-6 px-6">Status</th>
+                        <th class="pb-4 pt-6 px-6" colspan="2">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="task in tasks.data" :key="task.id"
+                        class="hover:bg-gray-100 dark:hover:bg-gray-600 focus-within:bg-gray-100  dark:focus-within:border-gray-600">
+                        <td class="border-t">
+                            <Link class="flex items-center px-6 py-4 focus:text-indigo-500" href="">
+                                {{ task.title }}
+                            </Link>
+                        </td>
+                        <td class="border-t">
+                            <Link class="flex items-center px-6 py-4" href="" tabindex="-1">
+                                {{ task.description }}
+                            </Link>
+                        </td>
+                        <td class="border-t">
+                <span :class="statusVariant(task.status)" class="px-2 py-1 rounded-full text-xs font-medium">
+                  {{ task.status? 'Complete' : 'In-Complete' }}
+                </span>
+                        </td>
+                        <td class="border-t">
+                            <Switch :model-value="!!task.status" @update:modelValue="updateStatus(task)"
+                                    :class="[task.status ? 'bg-indigo-600' : 'bg-gray-200', 'relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2']">
+                                <span class="sr-only">Toggle Status</span>
+                                <span
+                                    :class="[task.status ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none relative inline-block size-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']">
+                                  <span
+                                      :class="[task.status ? 'opacity-0 duration-100 ease-out' : 'opacity-100 duration-200 ease-in', 'absolute inset-0 flex size-full items-center justify-center transition-opacity']"
+                                      aria-hidden="true">
+                                    <svg class="size-3 text-gray-400" fill="none" viewBox="0 0 12 12">
+                                      <path d="M4 8l2-2m0 0l2-2M6 6L4 4m2 2l2 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round"/>
+                                    </svg>
+                                  </span>
+                                  <span
+                                      :class="[task.status ? 'opacity-100 duration-200 ease-in' : 'opacity-0 duration-100 ease-out', 'absolute inset-0 flex size-full items-center justify-center transition-opacity']"
+                                      aria-hidden="true">
+                                    <svg class="size-3 text-indigo-600" fill="currentColor" viewBox="0 0 12 12">
+                                      <path
+                                          d="M3.707 5.293a1 1 0 00-1.414 1.414l1.414-1.414zM5 8l-.707.707a1 1 0 001.414 0L5 8zm4.707-3.293a1 1 0 00-1.414-1.414l1.414 1.414zm-7.414 2l2 2 1.414-1.414-2-2-1.414 1.414zm3.414 2l4-4-1.414-1.414-4 4 1.414 1.414z"/>
+                                    </svg>
+                                  </span>
+                                </span>
+                            </Switch>
+                        </td>
+                    </tr>
+                    <tr v-if="tasks.data.length === 0">
+                        <td class="px-6 py-4 border-t" colspan="4">No organizations found.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <Pagination class="mt-6" :links="tasks.links"/>
+        </div>
+    </AppLayout>
 </template>
 
 <style scoped>

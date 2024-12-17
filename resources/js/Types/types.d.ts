@@ -8,7 +8,7 @@
 export interface Task extends Model{
     title: string
     description: string | null
-    status:  'pending' | 'completed' | 'canceled'
+    status:  boolean
 }
 
 export interface ListResponse<T> {
