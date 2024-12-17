@@ -1,0 +1,12 @@
+### POST create a new task
+POST http://localhost:8000/api/tasks
+Accept: application/json
+Content-Type: application/json
+
+{
+  "title": "Task 2",
+  "description": "Description 2",
+  "status": "pending"
+}
+
+###

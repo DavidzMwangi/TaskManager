@@ -75,7 +75,7 @@ const logout = () => {
         </div>
         <div class="md:flex md:grow md:overflow-hidden">
           <MainMenu class="hidden shrink-0 p-12 w-56 bg-indigo-800 overflow-y-auto md:block" />
-          <div class="px-4 py-8 md:flex-1 md:p-12 md:overflow-y-auto bg-gray-300 dark:bg-gray-700 " scroll-region>
+          <div class="px-4 py-8 md:flex-1 md:p-12 md:overflow-y-auto bg-gray-300 dark:bg-indigo-900 " scroll-region>
             <FlashMessages />
             <slot />
           </div>

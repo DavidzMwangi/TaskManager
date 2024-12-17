@@ -12,7 +12,7 @@ class TaskController extends Controller
     {
         $request->validate([
             'title' => 'required|unique:tasks',
-            'description' => 'optional',
+            'description' => 'nullable',
         ]);
 
         $task = Task::create($request->all());
