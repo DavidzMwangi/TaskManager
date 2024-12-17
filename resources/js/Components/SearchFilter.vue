@@ -1,7 +1,7 @@
 <template>
-  <div class="flex items-center">
-    <div class="flex w-full bg-white rounded shadow">
-      <dropdown :auto-close="false" class="focus:z-10 px-4 hover:bg-gray-100 border-r focus:border-white rounded-l focus:ring md:px-6" placement="bottom-start">
+  <div class="flex items-center text-gray-500 dark:text-gray-100">
+    <div class="flex w-full bg-white dark:bg-gray-500  rounded shadow">
+      <dropdown :auto-close="false" class="focus:z-10 px-4 hover:bg-gray-100  hover:dark:bg-gray-400 border-r focus:border-white rounded-l focus:ring md:px-6" placement="bottom-start">
         <template #default>
           <div class="flex items-baseline">
             <span class="hidden text-gray-700 md:inline">Filter</span>
@@ -11,14 +11,14 @@
           </div>
         </template>
         <template #dropdown>
-          <div class="mt-2 px-4 py-6 w-screen bg-white rounded shadow-xl" :style="{ maxWidth: `${maxWidth}px` }">
+          <div class="mt-2 px-4 py-6 w-screen bg-white dark:bg-gray-700 rounded shadow-xl" :style="{ maxWidth: `${maxWidth}px` }">
             <slot />
           </div>
         </template>
       </dropdown>
-      <input class="relative px-6 py-3 w-full rounded-r focus:shadow-outline" autocomplete="off" type="text" name="search" placeholder="Search…" :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" />
+      <input class="relative  bg-white dark:bg-gray-500 text-gray-500 dark:text-gray-100 placeholder:text-gray-500 placeholder:dark:text-gray-100 px-6 py-3 w-full rounded-r focus:shadow-outline" autocomplete="off" type="text" name="search" placeholder="Search…" :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" />
     </div>
-    <button class="ml-3 text-gray-500 hover:text-gray-700 focus:text-indigo-500 text-sm" type="button" @click="$emit('reset')">Reset</button>
+    <button class="ml-3 text-gray-500 dark:text-gray-100 hover:text-gray-700 focus:text-indigo-500 text-sm" type="button" @click="$emit('reset')">Reset</button>
   </div>
 </template>
 
