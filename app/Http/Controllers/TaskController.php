@@ -13,12 +13,23 @@ class TaskController extends Controller
     public function index()
     {
         return Inertia::render('Tasks/Index', [
-//            'filters' => Request::all('search', 'trashed'),
-            'tasks' => Task::query()
+            'tasks_prop' => Task::query()
                 ->paginate(10)
         ]);
     }
 
+    public function search(Request $request)
+    {
+        $tasks = Task::query()
+            ->filter([
+                'search'=>$request->input('search'),
+                'filterStatus'=>$request->input('filterStatus')])
+            ->paginate(10);
+
+        return response()->json([
+            'tasks' => $tasks,
+        ]);
+    }
     public function update(Request $request,Task $task)
     {
         $validator = Validator::make($request->all(),[

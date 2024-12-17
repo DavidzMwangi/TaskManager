@@ -7,35 +7,68 @@ import Icon from "@/Components/Icon.vue";
 import {Head, Link, useForm} from '@inertiajs/vue3'
 import SearchFilter from "@/Components/SearchFilter.vue";
 import {Switch} from '@headlessui/vue'
-import {ref} from 'vue'
+import {ref, watch} from 'vue'
+import axios from "axios";
 
 const enabled = ref(false)
+let timeout = null; // For storing the timeout reference
 
-defineProps({
-    tasks: {
+const props = defineProps({
+    tasks_prop: {
         type: Object as () => ListResponse<Task>,
         required: true
     }
 })
+const tasks = ref<ListResponse<Task>>(props.tasks_prop)
 const statusVariant = (status: boolean) => {
     return status ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
 }
 const form = useForm({
-    status: false,
+    status: false
 });
+
+const searchFilter = ref({
+    search: null,
+    filterStatus: null
+})
+
+const fetchData = () => {
+     // Clear the previous timeout if the user is still typing
+  if (timeout) {
+    clearTimeout(timeout);
+  }
+  // Set a new timeout to trigger the API call or other logic
+  timeout = setTimeout(() => {
+      axios.get(route('tasks.search'), {
+          params: {
+              search: searchFilter.value.search,
+              filterStatus: searchFilter.value.filterStatus
+          }
+      }).then(response => {
+          console.log(response.data)
+          tasks.value = response.data.tasks
+      }).catch(error => {
+          console.log(error)
+      })
+  }, 300); // 300ms delay before executing the logic
+
+}
 const updateStatus = (task: Task) => {
-    console.log(task)
     form.status = !task.status
     form.put(route('tasks.update', task.id),{
         preserveScroll: true,
-        onSuccess: () => {
-            console.log('Task updated')
+        onSuccess: (res) => {
+
         },
         onError: (err) => {
             console.log(err)
         }
     })
-    // axios.put(`/tasks/${task.id}`, {status: task.status})
+}
+const reset = () => {
+    searchFilter.value.search = null
+    searchFilter.value.filterStatus = null
+    fetchData()
 }
 </script>
 
@@ -45,16 +78,16 @@ const updateStatus = (task: Task) => {
 
         <div>
             <Head title="Organizations"/>
-            <h1 class="mb-8 text-3xl font-bold">Organizations</h1>
+            <h1 class="mb-8 text-3xl font-bold text-gray-500 dark:text-gray-100">Tasks</h1>
             <div class="flex items-center justify-between mb-6">
-                <!--      <SearchFilter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">-->
-                <!--        <label class="block text-gray-700">Trashed:</label>-->
-                <!--        <select v-model="form.trashed" class="form-select mt-1 w-full">-->
-                <!--          <option :value="null" />-->
-                <!--          <option value="with">With Trashed</option>-->
-                <!--          <option value="only">Only Trashed</option>-->
-                <!--        </select>-->
-                <!--      </SearchFilter>-->
+                      <SearchFilter v-model="searchFilter.search" class="mr-4 w-full max-w-md" @reset="reset" @keyup="fetchData">
+                        <label class="block text-gray-500 dark:text-gray-100">Status:</label>
+                        <select v-model="searchFilter.filterStatus" @change="fetchData" class="form-select mt-1 w-full">
+                            <option value="null" :selected="searchFilter.filterStatus === null">All</option>
+                          <option value="true"  :selected="searchFilter.filterStatus === true">Completed</option>
+                          <option value="false"  :selected="searchFilter.filterStatus === false">In-Complete</option>
+                        </select>
+                      </SearchFilter>
                 <Link class="btn-indigo" href="/organizations/create">
                     <span>Create</span>
                     <span class="hidden md:inline">&nbsp;Organization</span>
@@ -72,16 +105,16 @@ const updateStatus = (task: Task) => {
                     </thead>
                     <tbody>
                     <tr v-for="task in tasks.data" :key="task.id"
-                        class="hover:bg-gray-100 dark:hover:bg-gray-600 focus-within:bg-gray-100  dark:focus-within:border-gray-600">
+                        class="hover:bg-gray-100 dark:hover:bg-gray-600 ">
                         <td class="border-t">
-                            <Link class="flex items-center px-6 py-4 focus:text-indigo-500" href="">
+                            <p class="flex items-center px-6 py-4 focus:text-indigo-500">
                                 {{ task.title }}
-                            </Link>
+                            </p>
                         </td>
                         <td class="border-t">
-                            <Link class="flex items-center px-6 py-4" href="" tabindex="-1">
+                            <p class="flex items-center px-6 py-4" tabindex="-1">
                                 {{ task.description }}
-                            </Link>
+                            </p>
                         </td>
                         <td class="border-t">
                 <span :class="statusVariant(task.status)" class="px-2 py-1 rounded-full text-xs font-medium">
