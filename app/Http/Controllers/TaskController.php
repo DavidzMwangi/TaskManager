@@ -35,7 +35,7 @@ class TaskController extends Controller
     public function update(Request $request,Task $task)
     {
         $validator = Validator::make($request->all(),[
-            'title' => 'nullable|unique:tasks',
+            'title' => 'nullable|unique:tasks,title,'.$task->id,
             'description' => 'nullable',
             'status' => 'nullable|boolean',
         ]);
@@ -62,4 +62,5 @@ class TaskController extends Controller
 
         return Redirect::back()->with('success', 'Task created.');
     }
+
 }

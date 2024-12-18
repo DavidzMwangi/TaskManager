@@ -22,6 +22,9 @@ const props = defineProps({
     }
 })
 const tasks = ref<ListResponse<Task>>(props.tasks_prop)
+const task = ref<Task | null>(null)
+const showTaskModal = ref(false);
+
 const statusVariant = (status: boolean) => {
     return status ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
 }
@@ -33,7 +36,11 @@ const searchFilter = ref({
     search: null,
     filterStatus: null
 })
-
+const editTask = (task_id:number)=>{
+    //find the product by id and set it to the product ref
+    task.value = tasks.value.data.find(task=>task.id === task_id)
+    showTaskModal.value = true
+}
 const fetchData = () => {
      // Clear the previous timeout if the user is still typing
   if (timeout) {
@@ -72,10 +79,15 @@ const reset = () => {
     searchFilter.value.filterStatus = null
     fetchData()
 }
-const showTaskModal = ref(false);
 const closeModal = () => {
   showTaskModal.value = false;
+  fetchData()
 };
+const newTaskModal = () => {
+    task.value = null
+    showTaskModal.value = true
+    fetchData()
+}
 </script>
 
 <template>
@@ -92,7 +104,7 @@ const closeModal = () => {
                           <option value="false"  :selected="searchFilter.filterStatus === false">In-Complete</option>
                         </select>
                       </SearchFilter>
-                <PrimaryButton class="btn-indigo"  @click="showTaskModal = true" >
+                <PrimaryButton class="btn-indigo"  @click="newTaskModal" >
                     <span>Create</span>
                     <span class="hidden md:inline">&nbsp;Task</span>
                 </PrimaryButton>
@@ -121,9 +133,9 @@ const closeModal = () => {
                             </p>
                         </td>
                         <td class="border-t">
-                <span :class="statusVariant(task.status)" class="px-2 py-1 rounded-full text-xs font-medium">
-                  {{ task.status? 'Complete' : 'In-Complete' }}
-                </span>
+                            <span :class="statusVariant(task.status)" class="px-2 py-1 rounded-full text-xs font-medium">
+                              {{ task.status? 'Complete' : 'In-Complete' }}
+                            </span>
                         </td>
                         <td class="border-t">
                             <Switch :model-value="!!task.status" @update:modelValue="updateStatus(task)"
@@ -149,6 +161,10 @@ const closeModal = () => {
                                   </span>
                                 </span>
                             </Switch>
+<!--                            create an edit button-->
+                            <button @click="editTask(task.id)" class="px-6 py-4 text-indigo-600 dark:text-white hover:text-indigo-900  focus:text-indigo-900 ">
+                                Edit
+                            </button>
                         </td>
                     </tr>
                     <tr v-if="tasks.data.length === 0">
@@ -160,7 +176,7 @@ const closeModal = () => {
             <Pagination class="mt-6" :links="tasks.links"/>
         </div>
         <div>
-            <TaskModalComponent :show="showTaskModal" @close="closeModal" />
+            <TaskModalComponent :show="showTaskModal" @close="closeModal" :task="task" />
         </div>
     </AppLayout>
 </template>
