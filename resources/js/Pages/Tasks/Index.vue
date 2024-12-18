@@ -67,7 +67,7 @@ const updateStatus = (task: Task) => {
     form.put(route('tasks.update', task.id),{
         preserveScroll: true,
         onSuccess: (res) => {
-
+            fetchData()
         },
         onError: (err) => {
             console.log(err)
@@ -93,7 +93,7 @@ const newTaskModal = () => {
 <template>
     <AppLayout>
         <div>
-            <Head title="Organizations"/>
+            <Head title="Tasks"/>
             <h1 class="mb-8 text-3xl font-bold text-gray-500 dark:text-gray-100">Tasks</h1>
             <div class="flex items-center justify-between mb-6">
                       <SearchFilter v-model="searchFilter.search" class="mr-4 w-full max-w-md" @reset="reset" @keyup="fetchData">
