@@ -8,6 +8,7 @@ import SecondaryButton from "@/Components/SecondaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import InputLabel from "@/Shared/InputLabel.vue";
 import InputError from "@/Shared/InputError.vue";
+import type {Task} from "@/Types/types";
 
 const emit = defineEmits(['close']);
 
@@ -15,7 +16,11 @@ const props = defineProps({
     show: {
         type: Boolean,
         default: false,
-    }
+    },
+    task: {
+        type: [Object as () => Task, null],
+        default: null,
+    },
 });
 const showModal = ref(props.show);
 
@@ -33,13 +38,30 @@ const form = useForm({
     description: '',
 });
 const submit = () => {
-    form.post(route('tasks.store'), {
-        onSuccess: () => {
-            form.reset()
-            closeModal()
-        },
-    });
+    if (props.task) {
+        form.put(route('tasks.update', props.task.id), {
+            onSuccess: () => {
+                form.reset()
+                closeModal()
+            },
+        });
+    } else {
+        form.post(route('tasks.store'), {
+            onSuccess: () => {
+                form.reset()
+                closeModal()
+            },
+        });
+    }
 };
+watch(() => props.task, (newVal) => {
+    if (newVal) {
+        form.title = newVal.title
+        form.description = newVal.description
+    } else {
+        form.reset()
+    }
+});
 </script>
 
 <template>
@@ -50,7 +72,7 @@ const submit = () => {
         @close="closeModal"
     >
         <template #title>
-            New Product Customization
+            {{ task ? 'Edit' : 'New' }} Task Form
         </template>
 
         <template #content>
