@@ -24,7 +24,7 @@ class TaskController extends Controller
         $tasks = Task::query()
             ->filter([
                 'search'=>$request->input('search'),
-                'filterStatus'=>$request->input('filterStatus')])
+                'status'=>$request->input('status')])
             ->latest()
             ->paginate(10);
 
