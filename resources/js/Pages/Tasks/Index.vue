@@ -9,6 +9,8 @@ import SearchFilter from "@/Components/SearchFilter.vue";
 import {Switch} from '@headlessui/vue'
 import {ref, watch} from 'vue'
 import axios from "axios";
+import TaskModalComponent from "@/Components/Tasks/TaskModalComponent.vue";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
 
 const enabled = ref(false)
 let timeout = null; // For storing the timeout reference
@@ -70,12 +72,14 @@ const reset = () => {
     searchFilter.value.filterStatus = null
     fetchData()
 }
+const showTaskModal = ref(false);
+const closeModal = () => {
+  showTaskModal.value = false;
+};
 </script>
 
 <template>
     <AppLayout>
-
-
         <div>
             <Head title="Organizations"/>
             <h1 class="mb-8 text-3xl font-bold text-gray-500 dark:text-gray-100">Tasks</h1>
@@ -88,10 +92,10 @@ const reset = () => {
                           <option value="false"  :selected="searchFilter.filterStatus === false">In-Complete</option>
                         </select>
                       </SearchFilter>
-                <Link class="btn-indigo" href="/organizations/create">
+                <PrimaryButton class="btn-indigo"  @click="showTaskModal = true" >
                     <span>Create</span>
-                    <span class="hidden md:inline">&nbsp;Organization</span>
-                </Link>
+                    <span class="hidden md:inline">&nbsp;Task</span>
+                </PrimaryButton>
             </div>
             <div class="bg-gray-300 dark:bg-gray-700  rounded-md shadow overflow-x-auto text-black dark:text-gray-300">
                 <table class="w-full whitespace-nowrap ">
@@ -154,6 +158,9 @@ const reset = () => {
                 </table>
             </div>
             <Pagination class="mt-6" :links="tasks.links"/>
+        </div>
+        <div>
+            <TaskModalComponent :show="showTaskModal" @close="closeModal" />
         </div>
     </AppLayout>
 </template>
