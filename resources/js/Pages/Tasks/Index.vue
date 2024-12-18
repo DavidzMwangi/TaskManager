@@ -34,7 +34,7 @@ const form = useForm({
 
 const searchFilter = ref({
     search: null,
-    filterStatus: null
+    status: null
 })
 const editTask = (task_id:number)=>{
     //find the product by id and set it to the product ref
@@ -51,7 +51,7 @@ const fetchData = () => {
       axios.get(route('tasks.search'), {
           params: {
               search: searchFilter.value.search,
-              filterStatus: searchFilter.value.filterStatus
+              status: searchFilter.value.status
           }
       }).then(response => {
           console.log(response.data)
@@ -76,7 +76,7 @@ const updateStatus = (task: Task) => {
 }
 const reset = () => {
     searchFilter.value.search = null
-    searchFilter.value.filterStatus = null
+    searchFilter.value.status = null
     fetchData()
 }
 const closeModal = () => {
@@ -98,10 +98,10 @@ const newTaskModal = () => {
             <div class="flex items-center justify-between mb-6">
                       <SearchFilter v-model="searchFilter.search" class="mr-4 w-full max-w-md" @reset="reset" @keyup="fetchData">
                         <label class="block text-gray-500 dark:text-gray-100">Status:</label>
-                        <select v-model="searchFilter.filterStatus" @change="fetchData" class="form-select mt-1 w-full">
-                            <option value="null" :selected="searchFilter.filterStatus === null">All</option>
-                          <option value="true"  :selected="searchFilter.filterStatus === true">Completed</option>
-                          <option value="false"  :selected="searchFilter.filterStatus === false">In-Complete</option>
+                        <select v-model="searchFilter.status" @change="fetchData" class="form-select mt-1 w-full">
+                            <option value="null" :selected="searchFilter.status === null">All</option>
+                          <option value="true"  :selected="searchFilter.status === true">Completed</option>
+                          <option value="false"  :selected="searchFilter.status === false">In-Complete</option>
                         </select>
                       </SearchFilter>
                 <PrimaryButton class="btn-indigo"  @click="newTaskModal" >

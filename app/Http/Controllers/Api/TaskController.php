@@ -5,15 +5,21 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Task;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Validator;
 
 class TaskController extends Controller
 {
     public function createTask(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(),[
             'title' => 'required|unique:tasks',
             'description' => 'nullable',
         ]);
+        if ($validator->fails()) {
+            return Redirect::back()
+                ->with('error', $validator->errors());
+        }
 
         $task = Task::create($request->all());
         return response()->json($task, 201);
@@ -21,19 +27,13 @@ class TaskController extends Controller
 
     public function getAllTasks(Request $request)
     {
-        $query = Task::query();
+        $tasks = Task::query()
+            ->filter([
+                'search'=>$request->input('search'),
+                'status'=>$request->input('status')])
+            ->latest()
+            ->paginate(10);;
 
-        if ($request->has('status')) {
-            $query->where('status', $request->status);
-        }
-        if ($request->has('due_date')) {
-            $query->whereDate('due_date', $request->due_date);
-        }
-        if ($request->has('title')) {
-            $query->where('title', 'like', '%' . $request->title . '%');
-        }
-
-        $tasks = $query->paginate(10);
         return response()->json($tasks);
     }
 
@@ -45,15 +45,20 @@ class TaskController extends Controller
 
     public function updateTask(Request $request, $id)
     {
-        $task = Task::findOrFail($id);
-        $request->validate([
-            'title' => 'required|unique:tasks',
+         $task = Task::findOrFail($id);
+         $validator = Validator::make($request->all(),[
+            'title' => 'nullable|unique:tasks,title,'.$task->id,
             'description' => 'nullable',
             'status' => 'nullable|boolean',
         ]);
-
+        if ($validator->fails()) {
+            return response()->json([
+                'error'=> $validator->errors()
+                ], 400);
+        }
         $task->update($request->all());
-        return response()->json($task);
+
+        return  response()->json(['message' => 'Task updated successfully']);
     }
 
     public function deleteTask($id)

@@ -4,8 +4,33 @@ Accept: application/json
 Content-Type: application/json
 
 {
-  "title": "Task 15",
-  "description": "Description 2"
+  "title": "Task 1",
+  "description": "Description 1"
 }
 
-###
+### GET get all tasks
+GET http://localhost:8000/api/tasks
+Accept: application/json
+Content-Type: application/json
+
+
+### GET get a single tasks
+GET http://localhost:8000/api/tasks/1
+Accept: application/json
+Content-Type: application/json
+
+
+### put update a single tasks
+PUT http://localhost:8000/api/tasks/1
+Accept: application/json
+Content-Type: application/json
+
+{
+  "title": "Task 1",
+  "description": "Description 1"
+}
+
+### DELETE  a single tasks
+DELETE http://localhost:8000/api/tasks/1
+Accept: application/json
+Content-Type: application/json
