@@ -17,9 +17,8 @@ Before you start, ensure that the following software is installed on your machin
 
 ### 1. Clone the Repository
 ```bash
-# Replace <repository-url> with the URL of your Laravel-Vue-Inertia app
-git clone <repository-url>
-cd <repository-name>
+git clone https://github.com/DavidzMwangi/TaskManager.git
+cd TaskManager
 ```
 
 ### 2. Install PHP Dependencies
