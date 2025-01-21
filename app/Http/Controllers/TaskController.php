@@ -7,6 +7,7 @@ use App\Models\Task;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Redirect;
+
 class TaskController extends Controller
 {
     public function index()
