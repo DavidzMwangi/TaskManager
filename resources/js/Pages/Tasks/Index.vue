@@ -4,16 +4,20 @@ import AppLayout from "@/Layouts/AppLayout.vue";
 import type {ListResponse, Task} from "@/Types/types";
 import Pagination from "@/Components/Pagination.vue";
 import Icon from "@/Components/Icon.vue";
-import {Head, Link, useForm} from '@inertiajs/vue3'
+import {Head, Link, useForm, usePage} from '@inertiajs/vue3'
 import SearchFilter from "@/Components/SearchFilter.vue";
 import {Switch} from '@headlessui/vue'
-import {ref, watch} from 'vue'
+import {computed, onMounted, ref, watch} from 'vue'
 import axios from "axios";
 import TaskModalComponent from "@/Components/Tasks/TaskModalComponent.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 
 const enabled = ref(false)
 let timeout = null; // For storing the timeout reference
+const page = usePage()
+//get the auth user
+const user = computed(()=>page.props.auth.user)
+
 
 const props = defineProps({
     tasks_prop: {
@@ -21,6 +25,7 @@ const props = defineProps({
         required: true
     }
 })
+
 const tasks = ref<ListResponse<Task>>(props.tasks_prop)
 const task = ref<Task | null>(null)
 const showTaskModal = ref(false);
@@ -88,6 +93,19 @@ const newTaskModal = () => {
     showTaskModal.value = true
     fetchData()
 }
+
+const deleteTask = (task_id:number)=>{
+   form.delete(route('tasks.delete', task_id),{
+        preserveScroll: true,
+        onSuccess: (res) => {
+            fetchData()
+        },
+        onError: (err) => {
+            console.log(err)
+        }
+    })
+}
+
 </script>
 
 <template>
@@ -164,6 +182,9 @@ const newTaskModal = () => {
 <!--                            create an edit button-->
                             <button @click="editTask(task.id)" class="px-6 py-4 text-indigo-600 dark:text-white hover:text-indigo-900  focus:text-indigo-900 ">
                                 Edit
+                            </button>
+                            <button @click="deleteTask(task.id)" class="px-6 py-4 text-red-600 dark:text-red-500 hover:text-red-300  focus:text-red-300 " v-if="user.user_type === 0">
+                                Delete
                             </button>
                         </td>
                     </tr>

@@ -31,4 +31,5 @@ Route::group(['middleware' => 'auth:sanctum', 'prefix'=>'tasks', 'as'=>'tasks.']
     Route::post('/tasks', [TaskController::class, 'store'])->name('store');
     Route::get('/tasks/{task}', [TaskController::class, 'show'])->name('show');
     Route::put('/tasks/{task}', [TaskController::class, 'update'])->name('update');
+    Route::delete('/tasks/delete/{task}',[TaskController::class,'deleteTask'])->name('delete');
 });
