@@ -63,4 +63,16 @@ class TaskController extends Controller
         return Redirect::back()->with('success', 'Task created.');
     }
 
+    public function deleteTask(Task $task)
+    {
+        //get the auth user
+        $user = auth()->user();
+
+        if ($user->user_type == 0){
+            $task->delete();
+            return Redirect::back()->with('success', 'Task deleted.');
+        }else{
+            return Redirect::back()->with('error', 'You are not authorized to delete this task.');
+        }
+    }
 }

@@ -7,11 +7,13 @@ import InputError from '@/Shared/InputError.vue';
 import InputLabel from '@/Shared/InputLabel.vue';
 import PrimaryButton from '@/Shared/PrimaryButton.vue';
 import TextInput from '@/Shared/TextInput.vue';
+import SelectInput from "@/Components/SelectInput.vue";
 
 const form = useForm({
     name: '',
     email: '',
     password: '',
+    user_type:0,
     password_confirmation: '',
     terms: false,
 });
@@ -57,6 +59,13 @@ const submit = () => {
                     autocomplete="username"
                 />
                 <InputError class="mt-2" :message="form.errors.email" />
+            </div>
+            <div class="mt-4">
+                <InputLabel for="userType" value="UserType"/>
+                <select v-model="form.user_type" class="form-select mt-1 w-full">
+                    <option value="0">Admin</option>
+                    <option value="1">User</option>
+                </select>
             </div>
 
             <div class="mt-4">
